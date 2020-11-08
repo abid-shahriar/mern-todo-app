@@ -11,7 +11,11 @@ app.use(express.json());
 
 // connecting to database
 mongoose
-  .connect(URI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .connect(URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useCreateIndex: true,
+  })
   .then((result) => {
     console.log("connected to db");
     app.listen(PORT, () => console.log(`app running on:${PORT}`));
