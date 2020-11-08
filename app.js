@@ -11,7 +11,7 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-// connecting to database
+// connecting to database and listening to port
 mongoose
   .connect(URI, {
     useNewUrlParser: true,
