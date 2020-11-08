@@ -1,5 +1,6 @@
 const userModel = require("../models/userModel");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
 const user_register = async (req, res) => {
   try {
@@ -53,13 +54,25 @@ const user_login = async (req, res) => {
   try {
     const { email, password } = req.body;
     if (!email || !password) {
-      return res.json({ msg: "please enter an email and a password." });
+      return res
+        .status(400)
+        .json({ msg: "please enter an email and a password." });
     }
 
     const user = await userModel.findOne({ email: email });
     if (!user) {
-      return res.json({ msg: "Please enter a valid email address." });
+      return res
+        .status(400)
+        .json({ msg: "No account with this email has been registred." });
     }
+
+    const passMatch = await bcrypt.compare(password, user.password);
+    if (!passMatch) {
+      return res.status(400).json({ msc: "Invalid credentials" });
+    }
+
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+    res.send(token);
   } catch (err) {
     res.status(500).json(err.message);
   }
