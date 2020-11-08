@@ -1,9 +1,11 @@
 const userModel = require("../models/userModel");
+const bcrypt = require("bcryptjs");
 
 const user_register = async (req, res) => {
   try {
-    const { email, password, passwordCheck, DisplayName } = req.body;
+    let { email, password, passwordCheck, displayName } = req.body;
 
+    // validation
     if (!email || !password || !passwordCheck) {
       return res
         .status(400)
@@ -22,13 +24,26 @@ const user_register = async (req, res) => {
         .json({ msg: "Enter the same password twice for verification." });
     }
 
-    const exixtingUser = await userModel.find({ email: email });
+    const exixtingUser = await userModel.findOne({ email: email });
     if (exixtingUser) {
       return res
         .status(400)
         .json({ msg: "Account with this email already exisrts." });
     }
-    if (!DisplayName) DisplayName = email;
+    if (!displayName) displayName = email;
+
+    const salt = await bcrypt.genSalt();
+    const passwordHash = await bcrypt.hash(password, salt);
+
+    const newUser = new userModel({
+      email,
+      password: passwordHash,
+      displayName,
+    });
+
+    const savedUser = await newUser.save();
+
+    res.send(savedUser);
   } catch (err) {
     res.status(500).json(err.message);
   }
