@@ -49,4 +49,20 @@ const user_register = async (req, res) => {
   }
 };
 
-module.exports = { user_register };
+const user_login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      return res.json({ msg: "please enter an email and a password." });
+    }
+
+    const user = await userModel.findOne({ email: email });
+    if (!user) {
+      return res.json({ msg: "Please enter a valid email address." });
+    }
+  } catch (err) {
+    res.status(500).json(err.message);
+  }
+};
+
+module.exports = { user_register, user_login };
