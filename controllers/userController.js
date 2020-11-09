@@ -2,6 +2,7 @@ const userModel = require("../models/userModel");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
+// user register controller
 const user_register = async (req, res) => {
   try {
     let { email, password, passwordCheck, displayName } = req.body;
@@ -50,9 +51,12 @@ const user_register = async (req, res) => {
   }
 };
 
+// user login controller
 const user_login = async (req, res) => {
   try {
     const { email, password } = req.body;
+
+    // validation
     if (!email || !password) {
       return res
         .status(400)
