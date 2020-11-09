@@ -76,10 +76,27 @@ const user_login = async (req, res) => {
     }
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
-    res.send(token);
+    res.json({
+      token,
+      user: {
+        id: user._id,
+        email: user.email,
+        displayName: user.displayName,
+      },
+    });
   } catch (err) {
     res.status(500).json(err.message);
   }
 };
 
-module.exports = { user_register, user_login };
+// user delete controller
+const user_delete = async (req, res) => {
+  try {
+    const deletedUser = await userModel.findByIdAndDelete(req.user);
+    res.json(deletedUser);
+  } catch (err) {
+    res.status(500).json(err.message);
+  }
+};
+
+module.exports = { user_register, user_login, user_delete };
